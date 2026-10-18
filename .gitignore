@@ -1,0 +1,15 @@
+# Your own racks, specs and scan reports (they contain your song paths)
+work/
+
+# Ableton files never belong in the repo
+*.adg
+*.als
+*.asd
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/

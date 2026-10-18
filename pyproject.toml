@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rackdigger"
+version = "0.1.0"
+description = "Grab device chains from your Ableton Live songs as ready-to-use racks."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = []
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Multimedia :: Sound/Audio",
+]
+
+[project.scripts]
+rackdigger = "rackdigger.cli:main"
+
+[tool.setuptools]
+packages = ["rackdigger"]
+
+[tool.setuptools.package-data]
+rackdigger = ["templates/*.xml"]
