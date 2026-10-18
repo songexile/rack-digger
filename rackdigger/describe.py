@@ -34,7 +34,7 @@ PLUGIN_KINDS = [
     ("pro-l", "limiter"), ("pro-r", "reverb"), ("ott", "multiband squash"), ("kickstart", "sidechain pump"),
     ("lfotool", "sidechain pump"), ("valhalladelay", "delay"), ("valhallafreqecho", "delay"),
     ("valhallasupermassive", "reverb / delay"), ("valhalla", "reverb"), ("rx950", "vintage sampler grit"),
-    ("sp950", "vintage sampler grit"), ("sp1200", "vintage sampler grit"), ("rc-20", "lo-fi texture"), ("la-2a", "compressor"), ("1176", "compressor"),
+    ("sp950", "vintage sampler grit"), ("sp1200", "vintage sampler grit"), ("rc-20", "lo-fi texture"), ("ohmicide", "multiband distortion"), ("saturn", "saturation"), ("la-2a", "compressor"), ("1176", "compressor"),
     ("distressor", "compressor / saturation"), ("plate", "reverb"), ("ampex", "tape saturation"),
     ("j37", "tape saturation"), ("tape", "tape saturation"), ("decapitator", "saturation"),
     ("soothe", "resonance suppressor"), ("ozone", "mastering"), ("trash", "distortion"),
@@ -254,6 +254,16 @@ def _clip_beats(clips):
     return sum(_f(c, "CurrentEnd", 0) - _f(c, "CurrentStart", 0) for c in clips)
 
 
+def _has_word(low, words):
+    """Whole-word-ish match: 'Soft Kicks' has kick and 'HiHat' has hat, but 'Tomorrow' has no tom."""
+    tokens = re.findall(r"[a-z0-9]+", low)
+    for w in words:
+        for t in tokens:
+            if t == w or (t.startswith(w) and len(t) - len(w) <= 1) or (len(w) >= 3 and t.endswith(w)):
+                return True
+    return False
+
+
 def guess_role(track_name, kind, synth, notes, sample_names, plugin_kinds=(), sampler=False):
     low = " ".join([track_name] + sample_names).lower()
     if kind == "GroupTrack":
@@ -262,11 +272,11 @@ def guess_role(track_name, kind, synth, notes, sample_names, plugin_kinds=(), sa
         return "return (send effect)"
     if kind == "MainTrack":
         return "master"
-    if any(w in low for w in VOX_WORDS) or any(k in VOCAL_KINDS for k in plugin_kinds):
+    if _has_word(low, VOX_WORDS) or any(k in VOCAL_KINDS for k in plugin_kinds):
         return "vocal"
-    if any(w in low for w in FX_WORDS):
+    if _has_word(low, FX_WORDS):
         return "FX hit"
-    if any(w in low for w in DRUM_WORDS):
+    if _has_word(low, DRUM_WORDS):
         return "drums / percussion"
     if sampler:
         return "bass" if "bass" in low else "sample"
